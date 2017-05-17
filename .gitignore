@@ -5,3 +5,5 @@ Gemfile.lock
 bin
 coverage
 pkg/*
+.idea/*
+*.iml

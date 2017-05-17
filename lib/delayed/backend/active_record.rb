@@ -98,6 +98,10 @@ module Delayed
             quoted_table_name = connection.quote_table_name(table_name)
             subquery_sql      = ready_scope.limit(1).lock(true).select("id").to_sql
             reserved          = find_by_sql(["UPDATE #{quoted_table_name} SET locked_at = ?, locked_by = ? WHERE id IN (#{subquery_sql}) RETURNING *", now, worker.name])
+            if reserved.present?
+              logger = Logger.new(STDOUT)
+              logger.debug("#################### Worker #{reserved.first.id} locked by #{worker.name} - #{db_time_now}")
+            end
             reserved[0]
           when "MySQL", "Mysql2"
             # Removing the millisecond precision from now(time object)
